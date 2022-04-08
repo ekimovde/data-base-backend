@@ -36,6 +36,14 @@ const Audit = sequelize.define("audit", {
   description: { type: DataTypes.TEXT, allowNull: false },
 });
 
+const Schedule = sequelize.define('schedule', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  doctor: { type: DataTypes.STRING, allowNull: false },
+  doctorPosition: { type: DataTypes.STRING, allowNull: false },
+  workingDays: { type: DataTypes.STRING, allowNull: false },
+  workingHours: { type: DataTypes.STRING, allowNull: false },
+})
+
 User.hasOne(UserDoctor);
 UserDoctor.belongsTo(User);
 
@@ -54,4 +62,5 @@ module.exports = {
   UserPatient,
   Chamber,
   Audit,
+  Schedule
 };
