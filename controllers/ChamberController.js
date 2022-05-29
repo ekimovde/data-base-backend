@@ -260,7 +260,9 @@ class ChamberController {
       return next(ApiError.badRequest("Данная палата не найдена!", data));
     }
 
-    const candidateDoctor = await User.findOne({ where: { email } });
+    const userDoctor = await User.findOne({ where: { email } });
+    const candidateDoctor = await UserDoctor.findOne({where: { userId: userDoctor.id }})
+
     if (_.isEmpty(candidateDoctor)) {
       data.status = "error";
       data.text = "Доктор с таким Email не найден!";
@@ -268,7 +270,7 @@ class ChamberController {
       return next(ApiError.badRequest("Доктор с таким Email не найден!", data));
     }
 
-    if (candidateDoctor.role !== "DOCTOR") {
+    if (userDoctor.role !== "DOCTOR") {
       data.status = "warning";
       data.text = "Пользователь с таким Email должен иметь роль DOCTOR!";
 
@@ -280,16 +282,14 @@ class ChamberController {
       );
     }
 
-    const candidateChamber = await Chamber.findOne({
-      where: { userDoctorId: candidateDoctor.id },
-    });
+    const candidateChamber = await Chamber.findOne({where: { active: true, userDoctorId: candidateDoctor.id }});
     if (_.isEmpty(candidateChamber) === false) {
       data.status = "error";
-      data.text = "Доктор с таким Email уже обслуживает палату!";
+      data.text = "Доктор с таким Email уже обслуживает палату! 124214124124";
 
       return next(
         ApiError.badRequest(
-          "Доктор с таким Email уже обслуживает палату!",
+          "Доктор с таким Email уже обслуживает палату! 1212412412412",
           data
         )
       );
@@ -299,6 +299,7 @@ class ChamberController {
       { userDoctorId: candidateDoctor.id },
       { where: { id } }
     );
+
     const chamber = await Chamber.findOne({
       where: { id },
       include: [{ model: UserPatient }, { model: UserDoctor }],
